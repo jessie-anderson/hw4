@@ -100,7 +100,6 @@ class Show extends Component {
   saveChanges() {
     if (this.state.hasEdited) {
       const post = { title: this.state.title, content: this.state.content, tags: this.state.tags, id: this.props.post._id };
-      console.log(post);
       this.props.updatePost(post);
     }
 
