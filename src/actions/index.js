@@ -51,6 +51,7 @@ export function updatePost(post) {
     axios.put(`${ROOT_URL}/posts/${post.id}`, post)
     .then((response) => {
       console.log(response);
+      browserHistory.push('/');
       dispatch({
         type: ActionTypes.UPDATE_POST,
         payload: response.data,
