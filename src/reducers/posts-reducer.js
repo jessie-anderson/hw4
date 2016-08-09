@@ -2,12 +2,19 @@ import { ActionTypes } from '../actions';
 
 const PostsReducer = (posts = { all: [], post: null }, action) => {
   switch (action.type) {
-    case ActionTypes.FETCH_POSTS:
-      return Object.assign({}, posts, { all: action.payload });
-    case ActionTypes.FETCH_POST:
+    case ActionTypes.FETCH_POSTS: {
+      const newPosts = action.payload.map(post => {
+        return Object.assign({}, post, { tags: post.tags.split(/[ ,]+/) });
+      });
+      return Object.assign({}, posts, { all: newPosts });
+    }
+    case ActionTypes.FETCH_POST: {
+      const newPost = Object.assign({}, action.payload, { tags: action.payload.tags.split(/[ ,]+/) });
+      return Object.assign({}, posts, { post: newPost });
+    }
+    case ActionTypes.UPDATE_POST: {
       return Object.assign({}, posts, { post: action.payload });
-    case ActionTypes.UPDATE_POST:
-      return Object.assign({}, posts, { post: action.payload });
+    }
     case ActionTypes.DELETE_POST: {
       // update local state so delete shows up right away
       const id = action.payload;
@@ -21,8 +28,9 @@ const PostsReducer = (posts = { all: [], post: null }, action) => {
       }
       return Object.assign({}, posts, { all: newPosts });
     }
-    default:
+    default: {
       return posts;
+    }
   }
 };
 

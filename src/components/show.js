@@ -23,7 +23,7 @@ class Show extends Component {
     this.state = {
       title: '',
       content: '',
-      tags: '',
+      tags: [],
       editingTitle: false,
       editingBody: false,
       editingTags: false,
@@ -93,7 +93,7 @@ class Show extends Component {
 
   onTagsChange(event) {
     this.setState({
-      tags: event.target.value,
+      tags: event.target.value.split(/[ ]+/),
     });
   }
 
@@ -159,18 +159,26 @@ class Show extends Component {
   }
 
   renderTags(tags) {
-    let tagsDiv, tagsEditText;
+    let tagsDiv, tagsText, tagsEditText;
+    if (tags === undefined) {
+      tagsText = '';
+    } else {
+      tagsText = '';
+      for (let i = 0; i < tags.length; i ++) {
+        tagsText = `${tagsText} ${tags[i]}`;
+      }
+    }
     if (this.state.editingTags) {
       tagsDiv = (
         <Textarea
-          value={tags}
+          value={tagsText}
           onChange={this.onTagsChange}
         />
       );
       tagsEditText = 'Done Editing';
     } else {
       tagsDiv = (
-        <div>{tags}</div>
+        <div>{tagsText}</div>
       );
       tagsEditText = 'Edit Tags';
     }

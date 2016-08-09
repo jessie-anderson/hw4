@@ -14,7 +14,7 @@ class New extends Component {
       note: {
         title: '',
         content: '',
-        tags: '',
+        tags: [],
       },
     };
   }
@@ -33,7 +33,7 @@ class New extends Component {
 
   onTagsChange(event) {
     this.setState({
-      note: Object.assign({}, this.state.note, { tags: event.target.value }),
+      note: Object.assign({}, this.state.note, { tags: event.target.value.split(/[ ,]+/) }),
     });
   }
 
