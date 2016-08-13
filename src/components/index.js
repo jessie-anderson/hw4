@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { fetchPosts, fetchPost, deletePost } from '../actions';
+import { fetchPosts, fetchPost, deletePost, signoutUser } from '../actions';
 
 class Index extends Component {
   constructor(props) {
@@ -60,7 +60,16 @@ class Index extends Component {
   }
 
   render() {
-    return this.renderPosts();
+    // only have signout button if someone is currently signed in
+    if (this.props.authenticated) {
+      const posts = this.renderPosts();
+      return (
+        <div>
+          {posts}
+          <button onClick={this.props.signoutUser}>Sign Out</button>
+        </div>
+      );
+    } else return this.renderPosts();
   }
 }
 
@@ -68,7 +77,8 @@ const mapStateToProps = (state) => {
   return {
     posts: state.posts.all,
     post: state.posts.post,
+    authenticated: state.auth.authenticated,
   };
 };
 
-export default connect(mapStateToProps, { fetchPosts, fetchPost, deletePost })(Index);
+export default connect(mapStateToProps, { fetchPosts, fetchPost, deletePost, signoutUser })(Index);
