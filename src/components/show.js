@@ -19,6 +19,7 @@ class Show extends Component {
     this.renderTitle = this.renderTitle.bind(this);
     this.renderBody = this.renderBody.bind(this);
     this.renderTags = this.renderTags.bind(this);
+    this.renderAuthor = this.renderAuthor.bind(this);
 
     this.state = {
       title: '',
@@ -190,8 +191,12 @@ class Show extends Component {
     );
   }
 
+  renderAuthor(author) {
+    return <div>Author: {author}</div>;
+  }
+
   render() {
-    let title, content, tags;
+    let title, content, tags, author;
     if (this.props.post == null) {
       return (
         <div>Retrieving Post</div>
@@ -206,15 +211,22 @@ class Show extends Component {
       content = this.state.content;
       tags = this.state.tags;
     }
+    if (this.props.post.author === undefined) {
+      author = '';
+    } else {
+      author = this.props.post.author.username;
+    }
     const titleDiv = this.renderTitle(title);
     const bodyDiv = this.renderBody(content);
     const tagsDiv = this.renderTags(tags);
+    const authorDiv = this.renderAuthor(author);
 
     return (
       <div className="full-note">
         {titleDiv}
         {bodyDiv}
         {tagsDiv}
+        {authorDiv}
         <button onClick={this.saveChanges}>Save Changes</button>
       </div>
     );

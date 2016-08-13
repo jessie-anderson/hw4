@@ -65,7 +65,10 @@ class Index extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return { posts: state.posts.all, post: state.posts.post };
+  return {
+    posts: state.posts.all,
+    post: state.posts.post,
+  };
 };
 
 export default connect(mapStateToProps, { fetchPosts, fetchPost, deletePost })(Index);

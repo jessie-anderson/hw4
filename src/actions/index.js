@@ -2,6 +2,7 @@
 import * as axios from 'axios';
 import { browserHistory } from 'react-router';
 const ROOT_URL = 'http://mongo-blog.herokuapp.com/api';
+// const ROOT_URL = 'http://localhost:9090/api';
 // const API_KEY = '?key=j_anderson';
 
 export const ActionTypes = {
@@ -10,7 +11,63 @@ export const ActionTypes = {
   CREATE_POST: 'CREATE_POST',
   UPDATE_POST: 'UPDATE_POST',
   DELETE_POST: 'DELETE_POST',
+  AUTH_USER: 'AUTH_USER',
+  DEAUTH_USER: 'DEAUTH_USER',
+  AUTH_ERROR: 'AUTH_ERROR',
 };
+
+// trigger to deauth if there is error
+// can also use in your error reducer if you have one to display an error message
+export function authError(error) {
+  return {
+    type: ActionTypes.AUTH_ERROR,
+    message: error,
+  };
+}
+
+export function signinUser({ email, password }) {
+  return (dispatch) => {
+    axios.post(`${ROOT_URL}/signin`, { email, password })
+    .then(response => {
+      dispatch({
+        type: ActionTypes.AUTH_USER,
+      });
+      localStorage.setItem('token', response.data.token);
+      browserHistory.push('/');
+    })
+    .catch(err => {
+      dispatch(authError(`Sign In Failed: ${err.response.data}`));
+    });
+  };
+}
+
+export function signupUser({ email, password, username }) {
+  return (dispatch) => {
+    axios.post(`${ROOT_URL}/signup`, { email, password, username })
+    .then(response => {
+      dispatch({
+        type: ActionTypes.AUTH_USER,
+      });
+      localStorage.setItem('token', response.data.token);
+      browserHistory.push('/');
+    })
+    .catch(err => {
+      dispatch(authError(`Sign Up Failed: ${err.response.data}`));
+    });
+  };
+}
+
+
+// deletes token from localstorage
+// and deauths
+export function signoutUser() {
+  return (dispatch) => {
+    localStorage.removeItem('token');
+    dispatch({ type: ActionTypes.DEAUTH_USER });
+    browserHistory.push('/');
+  };
+}
+
 
 export function fetchPosts() {
   return (dispatch) => {
@@ -32,7 +89,7 @@ export function createPost(post) {
       title: post.title,
       tags: post.tags,
       content: post.content,
-    })
+    }, { headers: { authorization: localStorage.getItem('token') } })
     .then((response) => {
       browserHistory.push('/');
       dispatch({
@@ -48,7 +105,7 @@ export function createPost(post) {
 
 export function updatePost(post) {
   return (dispatch) => {
-    axios.put(`${ROOT_URL}/posts/${post.id}`, post)
+    axios.put(`${ROOT_URL}/posts/${post.id}`, post, { headers: { authorization: localStorage.getItem('token') } })
     .then((response) => {
       browserHistory.push('/');
       dispatch({
@@ -77,13 +134,15 @@ export function fetchPost(id) {
 
 export function deletePost(id) {
   return (dispatch) => {
-    axios.delete(`${ROOT_URL}/posts/${id}`).then((response) => {
+    axios.delete(`${ROOT_URL}/posts/${id}`, { headers: { authorization: localStorage.getItem('token') } })
+    .then((response) => {
       browserHistory.push('/');
       dispatch({
         type: ActionTypes.DELETE_POST,
         payload: id,
       });
-    }).catch((error) => {
+    })
+    .catch((error) => {
       console.log(error);
     });
   };
